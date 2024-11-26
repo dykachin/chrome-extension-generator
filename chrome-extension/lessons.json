@@ -1,0 +1,29 @@
+{
+  "Тест": [
+    {
+      "selector": "1",
+      "description": "1",
+      "requiresClick": false
+    },
+    {
+      "selector": "2",
+      "description": "2",
+      "requiresClick": false
+    }
+  ],
+  "1": [
+    {
+      "selector": "1",
+      "description": "1",
+      "requiresClick": false
+    }
+  ],
+  "456": [
+    {
+      "selector": "1",
+      "description": "1",
+      "requiresClick": false
+    }
+  ],
+  "Ткупкп": []
+}

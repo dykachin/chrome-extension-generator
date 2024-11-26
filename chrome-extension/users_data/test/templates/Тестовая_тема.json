@@ -1,0 +1,40 @@
+{
+  "Создание приказа о приеме": [
+    {
+      "buttonText": "",
+      "description": "Наведите сюда",
+      "requiresClick": false,
+      "selector": "#root > div.sc-kIeTtH.cnxSGb > div > div.sc-lmoMRL.iqbrwR > div > div:nth-child(4)"
+    },
+    {
+      "buttonText": "Создать приказ",
+      "description": "Нажмите сюда",
+      "requiresClick": true,
+      "selector": ""
+    },
+    {
+      "buttonText": "Кадровые перемещения",
+      "description": "Нажмите сюда",
+      "requiresClick": true,
+      "selector": ""
+    },
+    {
+      "buttonText": "",
+      "description": "Выберите этот пункт",
+      "requiresClick": false,
+      "selector": "body > div:nth-child(6) > div > div.react-ui-1kseug1 > div > div > div > div > div.focus-lock-container > div.react-ui-1ftq6k0 > div > div > span > div > div > div > div > span > div.sc-DJfgX.hwyPtT > div > ul > li:nth-child(1) > ul > li:nth-child(1) > div > div > div.sc-BXqHe.cjuJNa"
+    },
+    {
+      "buttonText": "",
+      "description": "Нажмите сюда",
+      "requiresClick": true,
+      "selector": "body > div:nth-child(6) > div > div.react-ui-1kseug1 > div > div > div > div > div.focus-lock-container > div:nth-child(3) > div > div > div > div > div > div > span:nth-child(1) > div > div > span > span"
+    },
+    {
+      "buttonText": "",
+      "description": "Выберите из списка нужную организацию",
+      "requiresClick": false,
+      "selector": "#root > div.sc-kIeTtH.cnxSGb > div > div.sc-dtwoBo.ghlaKS > div > div > div.sc-hrrSLS.cOtDVU > div:nth-child(3) > span > div > div > div > div > div.sc-cCuFUk.jxwZdM > div:nth-child(2) > div.sc-ekboDZ.iHJUGZ > div > div > div > div > span > span > span > button > div.react-ui-button-caption.react-ui-je6iux > span > div"
+    }
+  ]
+}

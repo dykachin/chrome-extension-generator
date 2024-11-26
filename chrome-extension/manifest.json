@@ -1,0 +1,15 @@
+{
+  "manifest_version": 2,
+  "name": "Lesson Steps Manager",
+  "version": "1.0",
+  "description": "Create and manage lesson steps with different themes",
+  "permissions": ["storage"],
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_title": "Lesson Steps Manager"
+  },
+  "icons": {
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

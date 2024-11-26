@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Генератор обучающих скриптов</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .template-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+        }
+        .lessons-section {
+            display: flex;
+            gap: 20px;
+        }
+        .template-panel {
+            padding: 15px;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .lessons-panel, .steps-panel {
+            flex: 1;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: white;
+        }
+        .lesson-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        .lesson-item:hover {
+            background-color: #e9ecef;
+        }
+        .step-item {
+            background-color: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+            position: relative;
+        }
+        .step-number {
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            background-color: #007bff;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        .step-content {
+            margin-top: 10px;
+        }
+        .step-controls {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+            justify-content: flex-end;
+        }
+        button {
+            padding: 8px 15px;
+            margin: 5px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        button.active {
+            background-color: #28a745;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .empty-steps {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-style: italic;
+        }
+        #stepForm {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        #generateExtension {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            margin-top: 20px;
+            transition: background-color 0.2s;
+        }
+        #generateExtension:hover {
+            background-color: #218838;
+        }
+        h1, h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .step-controls button {
+            padding: 4px 8px;
+            font-size: 14px;
+        }
+        .lesson-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .delete-btn {
+            background-color: #dc3545;
+        }
+        .delete-btn:hover {
+            background-color: #c82333;
+        }
+        .edit-mode {
+            background-color: #fff3cd !important;
+        }
+        .edit-mode .step-controls {
+            background-color: #fff3cd;
+        }
+        #cancelEdit {
+            background-color: #6c757d;
+            margin-left: 10px;
+        }
+        #cancelEdit:hover {
+            background-color: #5a6268;
+        }
+        #addStepBtn {
+            margin-bottom: 10px;
+        }
+        
+        .template-list {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .template-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+        
+        .template-item span {
+            flex-grow: 1;
+        }
+        
+        .template-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .template-buttons button {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .template-buttons .download-btn {
+            background-color: #17a2b8;
+        }
+        
+        .template-buttons .download-btn:hover {
+            background-color: #138496;
+        }
+        
+        .template-buttons .delete-btn {
+            background-color: #dc3545;
+        }
+        
+        .template-buttons .delete-btn:hover {
+            background-color: #c82333;
+        }
+        
+        .upload-btn {
+            background-color: #17a2b8;
+        }
+        
+        .upload-btn:hover {
+            background-color: #138496;
+        }
+        
+        .upload-area {
+            margin-top: 10px;
+            padding: 20px;
+            border: 2px dashed #ddd;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+        }
+        
+        .upload-area:hover {
+            border-color: #007bff;
+            background-color: #f8f9fa;
+        }
+        
+        #templateUpload {
+            display: none;
+        }
+        
+        .template-dialog {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        
+        .template-dialog input {
+            width: 100%;
+            margin: 10px 0;
+            padding: 5px;
+        }
+        
+        .template-dialog-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+        
+        .user-panel {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .username {
+            font-weight: bold;
+        }
+        
+        .logout-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .logout-btn:hover {
+            background-color: #c82333;
+        }
+        
+        .template-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .upload-controls {
+            display: flex;
+            align-items: center;
+        }
+        
+        /* Стили для уведомлений */
+        .notification-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        
+        .notification {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 4px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            min-width: 300px;
+            max-width: 400px;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .notification.success {
+            border-left: 4px solid #28a745;
+        }
+        
+        .notification.error {
+            border-left: 4px solid #dc3545;
+        }
+        
+        .notification.info {
+            border-left: 4px solid #17a2b8;
+        }
+        
+        .notification-content {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+        
+        .notification-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        .notification-message {
+            color: #666;
+        }
+        
+        .notification-close {
+            color: #999;
+            cursor: pointer;
+            font-size: 20px;
+            line-height: 20px;
+        }
+        
+        .notification-close:hover {
+            color: #666;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+        
+        /* Стили для модального окна подтверждения */
+        .confirm-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .confirm-modal-content {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            min-width: 300px;
+        }
+        
+        .confirm-modal-title {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .confirm-modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .confirm-modal-button {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+        
+        .confirm-modal-button.cancel {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .confirm-modal-button.cancel:hover {
+            background-color: #5a6268;
+        }
+        
+        .confirm-modal-button.confirm {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .confirm-modal-button.confirm:hover {
+            background-color: #c82333;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+        
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .input-group input {
+            flex: 1;
+        }
+        
+        .input-hint {
+            color: #666;
+            font-size: 14px;
+            padding: 0 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="user-panel">
+        <span class="username">{{ username }}</span>
+        <a href="/logout" class="logout-btn">Выйти</a>
+    </div>
+
+    <h1>Генератор обучающих скриптов</h1>
+    
+    <div class="container">
+        <div class="template-section">
+            <h2>Темы уроков</h2>
+            <div class="template-panel">
+                <div class="template-controls">
+                    <input type="text" id="templateName" placeholder="Название темы">
+                    <button onclick="saveTemplate()">Сохранить как тему</button>
+                    <div class="upload-controls">
+                        <button onclick="document.getElementById('templateFile').click()" class="upload-btn">
+                            Загрузить тему из файла
+                        </button>
+                        <input type="file" id="templateFile" accept=".json" style="display: none" onchange="handleTemplateFileUpload(event)">
+                    </div>
+                </div>
+                <div id="templateList" class="template-list"></div>
+            </div>
+        </div>
+
+        <div class="lessons-section">
+            <div class="lessons-panel">
+                <h2>Уроки</h2>
+                <div>
+                    <input type="text" id="lessonName" placeholder="Название урока">
+                    <button onclick="createLesson()">Создать урок</button>
+                </div>
+                <div id="lessonsList">
+                    <!-- Список уроков будет здесь -->
+                </div>
+            </div>
+            
+            <div class="steps-panel">
+                <h2>Шаги урока: <span id="currentLessonName"></span></h2>
+                <div id="stepForm" style="display: none;">
+                    <h3>
+                        <span id="formTitle">Добавить шаг</span> 
+                        для урока: <span id="currentLessonName"></span>
+                    </h3>
+                    <div class="input-group">
+                        <input type="text" id="buttonText" placeholder="Текст кнопки или ссылки">
+                        <span class="input-hint">или</span>
+                        <input type="text" id="selector" placeholder="CSS селектор элемента">
+                    </div>
+                    <textarea id="description" placeholder="Описание шага"></textarea>
+                    <div class="checkbox-container" style="margin: 10px 0;">
+                        <input type="checkbox" id="requiresClick">
+                        <label for="requiresClick">Требуется клик для перехода к следующему шагу</label>
+                    </div>
+                    <div>
+                        <button onclick="saveStep()" id="saveStepBtn">Добавить шаг</button>
+                        <button onclick="cancelEdit()" id="cancelEdit" style="display: none;">Отмена</button>
+                    </div>
+                </div>
+                <div id="stepsList">
+                    <!-- Шаги урока будут здесь -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button id="generateExtension" onclick="generateExtension()">Скачать расширение Chrome</button>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="template-dialog" id="templateDialog">
+        <h3>Сохранить тему</h3>
+        <input type="text" id="templateName" placeholder="Введите название темы">
+        <div class="template-dialog-buttons">
+            <button onclick="cancelSaveTemplate()">Отмена</button>
+            <button onclick="confirmSaveTemplate()">Сохранить</button>
+        </div>
+    </div>
+
+    <!-- Добавляем контейнер для уведомлений -->
+    <div class="notification-container" id="notificationContainer"></div>
+
+    <!-- Добавляем модальное окно подтверждения -->
+    <div class="confirm-modal" id="confirmModal">
+        <div class="confirm-modal-content">
+            <div class="confirm-modal-title" id="confirmModalTitle">Подтверждение удаления</div>
+            <div class="confirm-modal-text" id="confirmModalText"></div>
+            <div class="confirm-modal-buttons">
+                <button class="confirm-modal-button cancel" onclick="closeConfirmModal()">Отмена</button>
+                <button class="confirm-modal-button confirm" onclick="confirmDelete()">Удалить</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentLesson = null;
+        let lessons = {};
+        let editingStepIndex = null;
+        let templateToDelete = null;
+        let lessonToDelete = null;
+        let deleteType = null; // 'template' или 'lesson'
+        
+        // Загружаем имя пользователя
+        const username = '{{ username }}';
+        
+        // Загружаем уроки при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            loadLessons();
+            loadTemplates();
+        });
+
+        function loadLessons() {
+            fetch('/get_lessons')
+            .then(response => response.json())
+            .then(data => {
+                lessons = data.lessons;  // Обновляем локальное состояние всех уроков
+                const lessonsList = document.getElementById('lessonsList');
+                lessonsList.innerHTML = '';
+                
+                Object.keys(lessons).forEach(lessonName => {
+                    const div = document.createElement('div');
+                    div.className = 'lesson-item';
+                    const isActive = currentLesson === lessonName;
+                    div.innerHTML = `
+                        <span>${lessonName}</span>
+                        <div class="lesson-buttons">
+                            <button onclick="selectLesson('${lessonName}')" ${isActive ? 'class="active"' : ''}>
+                                ${isActive ? 'Редактируется' : 'Редактировать'}
+                            </button>
+                            <button onclick="deleteLesson('${lessonName}')" class="delete-btn">
+                                Удалить
+                            </button>
+                        </div>
+                    `;
+                    lessonsList.appendChild(div);
+                });
+            });
+        }
+
+        function createLesson() {
+            const name = document.getElementById('lessonName').value;
+            if (!name) {
+                notify('Введите название урока', 'error');
+                return;
+            }
+            
+            fetch('/add_lesson', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ name: name })
+            })
+            .then(response => response.json())
+            .then(data => {
+                lessons = data.lessons;  // Обновляем уроки
+                document.getElementById('lessonName').value = '';
+                loadLessons();
+                selectLesson(name);
+            });
+        }
+
+        function selectLesson(lessonName) {
+            currentLesson = lessonName;
+            document.getElementById('currentLessonName').textContent = lessonName;
+            document.getElementById('stepForm').style.display = 'block';
+            loadSteps();
+            // Обновляем список уроков чтобы показать активный урок
+            loadLessons();
+        }
+
+        function editStep(index) {
+            const step = lessons[currentLesson][index];
+            editingStepIndex = index;
+            
+            // Заполняем форму данными шага
+            document.getElementById('buttonText').value = step.buttonText;
+            document.getElementById('selector').value = step.selector;
+            document.getElementById('description').value = step.description;
+            document.getElementById('requiresClick').checked = step.requiresClick;
+            
+            // Меняем внешний вид формы
+            document.getElementById('formTitle').textContent = 'Редактировать шаг';
+            document.getElementById('saveStepBtn').textContent = 'Сохранить изменения';
+            document.getElementById('cancelEdit').style.display = 'inline-block';
+            
+            // Подсвечиваем редактируемый шаг
+            const steps = document.querySelectorAll('.step-item');
+            steps.forEach((step, i) => {
+                if (i === index) {
+                    step.classList.add('edit-mode');
+                } else {
+                    step.classList.remove('edit-mode');
+                }
+            });
+            
+            // Прокручиваем к форме
+            document.getElementById('stepForm').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function cancelEdit() {
+            editingStepIndex = null;
+            resetForm();
+        }
+
+        function resetForm() {
+            document.getElementById('buttonText').value = '';
+            document.getElementById('selector').value = '';
+            document.getElementById('description').value = '';
+            document.getElementById('requiresClick').checked = false;
+            document.getElementById('formTitle').textContent = 'Добавить шаг';
+            document.getElementById('saveStepBtn').textContent = 'Добавить шаг';
+            document.getElementById('cancelEdit').style.display = 'none';
+            
+            // Убираем подсветку со всех шагов
+            document.querySelectorAll('.step-item').forEach(step => {
+                step.classList.remove('edit-mode');
+            });
+        }
+
+        function saveStep() {
+            const buttonText = document.getElementById('buttonText').value;
+            const selector = document.getElementById('selector').value;
+            const description = document.getElementById('description').value;
+            const requiresClick = document.getElementById('requiresClick').checked;
+
+            if (!buttonText && !selector) {
+                notify('Заполните текст кнопки или CSS селектор', 'error');
+                return;
+            }
+
+            if (!description) {
+                notify('Заполните описание шага', 'error');
+                return;
+            }
+
+            if (editingStepIndex !== null) {
+                // Редактирование существующего шага
+                fetch('/edit_step', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        lesson_name: currentLesson,
+                        index: editingStepIndex,
+                        buttonText: buttonText,
+                        selector: selector,
+                        description: description,
+                        requiresClick: requiresClick
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Обновляем локальное состояние уроков
+                    lessons[currentLesson] = data.steps;
+                    resetForm();
+                    editingStepIndex = null;
+                    loadSteps();
+                });
+            } else {
+                // Добавление нового шага
+                fetch('/add_step', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        lesson: currentLesson,
+                        buttonText: buttonText,
+                        selector: selector,
+                        description: description,
+                        requiresClick: requiresClick
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Обновляем локальное состояние уроков
+                    lessons[currentLesson] = data.steps;
+                    resetForm();
+                    loadSteps();
+                });
+            }
+        }
+
+        function loadSteps() {
+            if (!currentLesson) return;
+
+            fetch(`/get_steps?lesson=${currentLesson}`)
+            .then(response => response.json())
+            .then(data => {
+                // Обновляем локальное состояние уроков
+                lessons[currentLesson] = data.steps;
+                
+                const stepsList = document.getElementById('stepsList');
+                stepsList.innerHTML = '';
+                
+                data.steps.forEach((step, index) => {
+                    const div = document.createElement('div');
+                    div.className = 'step-item';
+                    div.innerHTML = `
+                        <span class="step-number">#${index + 1}</span>
+                        <div class="step-content">
+                            <strong>Текст кнопки:</strong> ${step.buttonText}<br>
+                            <strong>Селектор:</strong> ${step.selector}<br>
+                            <strong>Описание:</strong> ${step.description}<br>
+                            <strong>Требуется клик:</strong> ${step.requiresClick ? 'Да' : 'Нет'}
+                        </div>
+                        <div class="step-controls">
+                            ${index > 0 ? `<button onclick="moveStep(${index}, 'up')">↑</button>` : ''}
+                            ${index < data.steps.length - 1 ? `<button onclick="moveStep(${index}, 'down')">↓</button>` : ''}
+                            <button onclick="editStep(${index})">✎</button>
+                            <button onclick="removeStep(${index})">×</button>
+                        </div>
+                    `;
+                    stepsList.appendChild(div);
+                });
+            });
+        }
+
+        function moveStep(index, direction) {
+            fetch('/move_step', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    lesson_name: currentLesson,
+                    index: index,
+                    direction: direction
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                loadSteps();
+            });
+        }
+
+        function removeStep(index) {
+            if (!confirm('Вы уверены, что хотите удалить этот шаг?')) return;
+            
+            fetch('/remove_step', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    lesson_name: currentLesson,
+                    index: index
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                loadSteps();
+            });
+        }
+
+        function deleteLesson(lessonName) {
+            showConfirmModal(lessonName, 'lesson');
+        }
+
+        function showConfirmModal(item, type) {
+            if (type === 'template') {
+                templateToDelete = item;
+                lessonToDelete = null;
+                document.getElementById('confirmModalTitle').textContent = 'Подтверждение удаления темы';
+                document.getElementById('confirmModalText').textContent = 'Вы уверены, что хотите удалить эту тему?';
+            } else if (type === 'lesson') {
+                lessonToDelete = item;
+                templateToDelete = null;
+                document.getElementById('confirmModalTitle').textContent = 'Подтверждение удаления урока';
+                document.getElementById('confirmModalText').textContent = 'Вы уверены, что хотите удалить урок "' + item + '"?';
+            }
+            deleteType = type;
+            const modal = document.getElementById('confirmModal');
+            modal.style.display = 'block';
+        }
+        
+        function closeConfirmModal() {
+            const modal = document.getElementById('confirmModal');
+            modal.style.animation = 'fadeOut 0.3s ease-out';
+            setTimeout(() => {
+                modal.style.display = 'none';
+                modal.style.animation = '';
+            }, 300);
+            templateToDelete = null;
+            lessonToDelete = null;
+            deleteType = null;
+        }
+        
+        function confirmDelete() {
+            if (deleteType === 'template' && templateToDelete) {
+                performDeleteTemplate(templateToDelete);
+            } else if (deleteType === 'lesson' && lessonToDelete) {
+                performDeleteLesson(lessonToDelete);
+            }
+            closeConfirmModal();
+        }
+
+        function performDeleteLesson(lessonName) {
+            fetch('/delete_lesson', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    lesson_name: lessonName
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    delete lessons[lessonName];
+                    loadLessons();
+                    notify('Урок успешно удален', 'success');
+                } else {
+                    notify(data.message || 'Ошибка при удалении урока', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                notify('Ошибка при удалении урока', 'error');
+            });
+        }
+
+        function deleteTemplate(templatePath) {
+            showConfirmModal(templatePath, 'template');
+        }
+        
+        function performDeleteTemplate(templatePath) {
+            fetch('/delete_template', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    template_path: templatePath
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    loadTemplates();
+                    notify('Тема успешно удалена', 'success');
+                } else {
+                    notify(data.message || 'Ошибка при удалении темы', 'error');
+                }
+            })
+            .catch(error => {
+                notify('Ошибка при удалении темы', 'error');
+                console.error('Error:', error);
+            });
+        }
+        
+        function loadTemplates() {
+            fetch('/get_templates')
+            .then(response => response.json())
+            .then(templates => {
+                const templateList = document.getElementById('templateList');
+                templateList.innerHTML = '';
+                
+                templates.forEach(template => {
+                    // Заменяем обратные слеши на прямые для консистентности
+                    const safePath = template.path.replace(/\\/g, '/');
+                    
+                    const div = document.createElement('div');
+                    div.className = 'template-item';
+                    div.innerHTML = `
+                        <span>${template.name}</span>
+                        <div class="template-buttons">
+                            <button onclick="loadTemplate('${safePath}')">Загрузить</button>
+                            <button onclick="downloadTemplate('${safePath}', '${template.name}')" class="download-btn">Скачать</button>
+                            <button onclick="deleteTemplate('${safePath}')" class="delete-btn">Удалить</button>
+                        </div>
+                    `;
+                    templateList.appendChild(div);
+                });
+            })
+            .catch(error => {
+                console.error('Error loading templates:', error);
+            });
+        }
+        
+        function loadTemplate(templatePath) {
+            fetch('/load_template', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    template_path: templatePath
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Обновляем глобальную переменную lessons
+                    lessons = data.data;
+                    // Обновляем список уроков
+                    loadLessons();
+                    // Сбрасываем текущий урок
+                    currentLesson = null;
+                    // Очищаем список шагов
+                    document.getElementById('stepsList').innerHTML = '';
+                    notify('Тема успешно загружена', 'success');
+                } else {
+                    throw new Error(data.message || 'Ошибка при загрузке темы');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                notify(error.message || 'Ошибка при загрузке темы', 'error');
+            });
+        }
+        
+        function downloadTemplate(templatePath, templateName) {
+            fetch('/download_template', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    template_path: templatePath
+                })
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${templateName}.json`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            })
+            .catch(error => {
+                notify('Ошибка при скачивании темы', 'error');
+                console.error('Error:', error);
+            });
+        }
+        
+        function handleTemplateFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) {
+                return;
+            }
+
+            // Проверяем расширение файла
+            if (!file.name.endsWith('.json')) {
+                notify('Пожалуйста, выберите файл JSON', 'error');
+                event.target.value = '';
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('template_file', file);
+
+            fetch('/upload_template', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Обновляем глобальную переменную lessons
+                    lessons = data.data;
+                    // Обновляем список уроков
+                    loadLessons();
+                    // Сбрасываем текущий урок
+                    currentLesson = null;
+                    // Очищаем список шагов
+                    document.getElementById('stepsList').innerHTML = '';
+                    notify('Тема успешно загружена из файла', 'success');
+                } else {
+                    throw new Error(data.message || 'Ошибка при загрузке темы');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                notify(error.message || 'Ошибка при загрузке темы из файла', 'error');
+            })
+            .finally(() => {
+                // Очищаем input для возможности повторной загрузки того же файла
+                event.target.value = '';
+            });
+        }
+        
+        function saveTemplate() {
+            const templateName = document.getElementById('templateName').value.trim();
+            
+            if (!templateName) {
+                notify('Пожалуйста, введите название темы', 'error');
+                return;
+            }
+
+            if (Object.keys(lessons).length === 0) {
+                notify('Нет уроков для сохранения в тему', 'error');
+                return;
+            }
+
+            fetch('/save_template', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    template_name: templateName,
+                    template_data: lessons
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    notify('Тема успешно сохранена', 'success');
+                    document.getElementById('templateName').value = ''; // Очищаем поле ввода
+                    loadTemplates(); // Обновляем список тем
+                } else {
+                    throw new Error(data.message || 'Ошибка при сохранении темы');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                notify(error.message || 'Ошибка при сохранении темы', 'error');
+            });
+        }
+
+        // Функция для создания и показа уведомлений
+        function showNotification(type, title, message, duration = 5000) {
+            const container = document.getElementById('notificationContainer');
+            
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <div class="notification-title">${title}</div>
+                    <div class="notification-message">${message}</div>
+                </div>
+                <div class="notification-close">&times;</div>
+            `;
+            
+            container.appendChild(notification);
+            
+            // Добавляем обработчик для кнопки закрытия
+            const closeButton = notification.querySelector('.notification-close');
+            closeButton.addEventListener('click', () => {
+                notification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => {
+                    container.removeChild(notification);
+                }, 300);
+            });
+            
+            // Автоматически скрываем уведомление через duration мс
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.style.animation = 'slideOut 0.3s ease-out';
+                    setTimeout(() => {
+                        if (notification.parentElement) {
+                            container.removeChild(notification);
+                        }
+                    }, 300);
+                }
+            }, duration);
+        }
+        
+        // Заменяем все alert на showNotification
+        function notify(message, type = 'info') {
+            const titles = {
+                success: 'Успешно',
+                error: 'Ошибка',
+                info: 'Информация'
+            };
+            showNotification(type, titles[type], message);
+        }
+
+        function generateExtension() {
+            if (Object.keys(lessons).length === 0) {
+                notify('Добавьте хотя бы один урок перед генерацией расширения', 'error');
+                return;
+            }
+
+            // Показываем уведомление о начале генерации
+            notify('Начинаем генерацию расширения...', 'info');
+
+            fetch('/generate_extension')
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(data => {
+                            throw new Error(data.message || 'Ошибка при генерации расширения');
+                        });
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    // Создаем временную ссылку для скачивания
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'lesson-extension.zip';
+                    
+                    // Добавляем ссылку в документ
+                    document.body.appendChild(a);
+                    
+                    // Эмулируем клик
+                    a.click();
+                    
+                    // Очищаем
+                    setTimeout(() => {
+                        window.URL.revokeObjectURL(url);
+                        document.body.removeChild(a);
+                    }, 0);
+
+                    // Показываем уведомление об успехе
+                    notify('Расширение успешно сгенерировано', 'success');
+                })
+                .catch(error => {
+                    console.error('Error generating extension:', error);
+                    notify(error.message || 'Ошибка при генерации расширения', 'error');
+                });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    line-height: 1.6;
+}
+
+.step-form {
+    margin-bottom: 20px;
+}
+
+.step-form input {
+    margin-right: 10px;
+    padding: 5px;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+ul li {
+    margin: 5px 0;
+}
+
+ul li button {
+    margin-left: 10px;
+}
